@@ -37,7 +37,7 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
       throws IOException, BinanceException {
     // the name parameter seams to be mandatory
     String name = address.length() <= 10 ? address : address.substring(0, 10);
-    return withdraw(coin, address, null, amount, name);
+    return withdraw(coin, null, address, null, amount, name, null);
   }
 
   public WithdrawResponse withdraw(
@@ -45,20 +45,29 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
       throws IOException, BinanceException {
     // the name parameter seams to be mandatory
     String name = address.length() <= 10 ? address : address.substring(0, 10);
-    return withdraw(coin, address, addressTag, amount, name);
+    return withdraw(coin, null, address, addressTag, amount, name, null);
+  }
+
+  public WithdrawResponse withdraw(String coin, String network, String address, BigDecimal amount, String withdrawOrderId)
+          throws IOException, BinanceException {
+    // the name parameter seams to be mandatory
+    String name = address.length() <= 10 ? address : address.substring(0, 10);
+    return withdraw(coin, network, address, null, amount, name, withdrawOrderId);
   }
 
   private WithdrawResponse withdraw(
-      String coin, String address, String addressTag, BigDecimal amount, String name)
+      String coin, String network, String address, String addressTag, BigDecimal amount, String name, String withdrawOrderId)
       throws IOException, BinanceException {
     return decorateApiCall(
             () ->
                 binance.withdraw(
                     coin,
+                    network,
                     address,
                     addressTag,
                     amount,
                     name,
+                    withdrawOrderId,
                     getRecvWindow(),
                     getTimestampFactory(),
                     apiKey,
@@ -68,11 +77,12 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .call();
   }
 
-  public DepositAddress requestDepositAddress(Currency currency) throws IOException {
+  public DepositAddress requestDepositAddress(Currency currency, String network) throws IOException {
     return decorateApiCall(
             () ->
                 binance.depositAddress(
                     BinanceAdapters.toSymbol(currency),
+                    network,
                     getRecvWindow(),
                     getTimestampFactory(),
                     apiKey,
@@ -92,12 +102,14 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .call();
   }
 
-  public List<BinanceDeposit> depositHistory(String asset, Long startTime, Long endTime)
+  public List<BinanceDeposit> depositHistory(String asset, Integer status, Long startTime, Long endTime)
       throws BinanceException, IOException {
     return decorateApiCall(
             () ->
                 binance.depositHistory(
                     asset,
+                    status,
+                    null,
                     startTime,
                     endTime,
                     getRecvWindow(),
@@ -109,12 +121,33 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .call();
   }
 
-  public List<BinanceWithdraw> withdrawHistory(String asset, Long startTime, Long endTime)
+  public List<BinanceDeposit> depositHistory(String txId)
+          throws BinanceException, IOException {
+    return decorateApiCall(
+            () ->
+                    binance.depositHistory(
+                            null,
+                            null,
+                            txId,
+                            null,
+                            null,
+                            getRecvWindow(),
+                            getTimestampFactory(),
+                            apiKey,
+                            signatureCreator))
+            .withRetry(retry("depositHistory"))
+            .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
+            .call();
+  }
+
+  public List<BinanceWithdraw> withdrawHistory(String asset, Integer status, Long startTime, Long endTime)
       throws BinanceException, IOException {
     return decorateApiCall(
             () ->
                 binance.withdrawHistory(
                     asset,
+                    status,
+                    null,
                     startTime,
                     endTime,
                     getRecvWindow(),
@@ -124,6 +157,25 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .withRetry(retry("withdrawHistory"))
         .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
         .call();
+  }
+
+  public List<BinanceWithdraw> withdrawHistory(String withdrawOrderId)
+          throws BinanceException, IOException {
+    return decorateApiCall(
+            () ->
+                    binance.withdrawHistory(
+                            null,
+                            null,
+                            withdrawOrderId,
+                            null,
+                            null,
+                            getRecvWindow(),
+                            getTimestampFactory(),
+                            apiKey,
+                            signatureCreator))
+            .withRetry(retry("withdrawHistory"))
+            .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
+            .call();
   }
 
   public List<AssetDividendResponse.AssetDividend> getAssetDividend(Long startTime, Long endTime)
@@ -187,5 +239,17 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .withRetry(retry("transferSubUserHistory"))
         .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
         .call();
+  }
+
+  public List<BinanceCoinInfo> getAllCoinsInfo() throws BinanceException, IOException {
+    return decorateApiCall(
+            () -> binance.getAllCoinsInfo(
+                    getRecvWindow(),
+                    getTimestampFactory(),
+                    super.apiKey,
+                    super.signatureCreator))
+            .withRetry(retry("allCoinsInfo"))
+            .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
+            .call();
   }
 }

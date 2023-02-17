@@ -12,6 +12,7 @@ public class BinanceFundingHistoryParams
 
   private Currency currency;
   private Type type;
+  private Integer status;
   private Date startTime;
   private Date endTime;
 
@@ -53,5 +54,13 @@ public class BinanceFundingHistoryParams
   @Override
   public void setEndTime(Date endTime) {
     this.endTime = endTime;
+  }
+
+  public Integer getStatus() {
+    return status;
+  }
+
+  public void setStatus(Integer status) {
+    this.status = status;
   }
 }

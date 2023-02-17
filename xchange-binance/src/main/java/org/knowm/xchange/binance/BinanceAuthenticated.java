@@ -35,6 +35,26 @@ public interface BinanceAuthenticated extends Binance {
   String SIGNATURE = "signature";
   String X_MBX_APIKEY = "X-MBX-APIKEY";
 
+  @GET
+  @Path("/sapi/v1/capital/config/getall")
+  /**
+   * Get All Coins Information<br>
+   *
+   * @param recvWindow optional
+   * @param timestamp
+   * @param apiKey
+   * @param signature
+   * @return
+   * @throws IOException
+   * @throws BinanceException
+   */
+  List<BinanceCoinInfo> getAllCoinsInfo(
+          @QueryParam("recvWindow") Long recvWindow,
+          @QueryParam("timestamp") SynchronizedValueFactory<Long> timestamp,
+          @HeaderParam(X_MBX_APIKEY) String apiKey,
+          @QueryParam(SIGNATURE) ParamsDigest signature)
+          throws IOException, BinanceException;
+
   @POST
   @Path("api/v3/order")
   /**
@@ -288,10 +308,12 @@ public interface BinanceAuthenticated extends Binance {
    * Submit a withdraw request.
    *
    * @param coin
+   * @param network
    * @param address
    * @param addressTag optional for Ripple
    * @param amount
    * @param name optional, description of the address
+   * @param withdrawOrderId optional, client id for withdraw (helpful in searching)
    * @param recvWindow optional
    * @param timestamp
    * @param apiKey
@@ -302,10 +324,12 @@ public interface BinanceAuthenticated extends Binance {
    */
   WithdrawResponse withdraw(
       @FormParam("coin") String coin,
+      @FormParam("network") String network,
       @FormParam("address") String address,
       @FormParam("addressTag") String addressTag,
       @FormParam("amount") BigDecimal amount,
       @FormParam("name") String name,
+      @FormParam("withdrawOrderId") String withdrawOrderId,
       @FormParam("recvWindow") Long recvWindow,
       @FormParam("timestamp") SynchronizedValueFactory<Long> timestamp,
       @HeaderParam(X_MBX_APIKEY) String apiKey,
@@ -318,6 +342,8 @@ public interface BinanceAuthenticated extends Binance {
    * Fetch deposit history.
    *
    * @param coin optional
+   * @param status optional
+   * @param txId optional - transaction hash search
    * @param startTime optional
    * @param endTime optional
    * @param recvWindow optional
@@ -330,6 +356,8 @@ public interface BinanceAuthenticated extends Binance {
    */
   List<BinanceDeposit> depositHistory(
       @QueryParam("coin") String coin,
+      @QueryParam("status") Integer status,
+      @QueryParam("txId") String txId,
       @QueryParam("startTime") Long startTime,
       @QueryParam("endTime") Long endTime,
       @QueryParam("recvWindow") Long recvWindow,
@@ -344,6 +372,8 @@ public interface BinanceAuthenticated extends Binance {
    * Fetch withdraw history.
    *
    * @param coin optional
+   * @param status optional
+   * @param withdrawOrderId optional
    * @param startTime optional
    * @param endTime optional
    * @param recvWindow optional
@@ -356,6 +386,8 @@ public interface BinanceAuthenticated extends Binance {
    */
   List<BinanceWithdraw> withdrawHistory(
       @QueryParam("coin") String coin,
+      @QueryParam("status") Integer status,
+      @QueryParam("withdrawOrderId") String withdrawOrderId,
       @QueryParam("startTime") Long startTime,
       @QueryParam("endTime") Long endTime,
       @QueryParam("recvWindow") Long recvWindow,
@@ -424,6 +456,7 @@ public interface BinanceAuthenticated extends Binance {
    * Fetch deposit address.
    *
    * @param coin
+   * @param network
    * @param recvWindow
    * @param timestamp
    * @param apiKey
@@ -434,6 +467,7 @@ public interface BinanceAuthenticated extends Binance {
    */
   DepositAddress depositAddress(
       @QueryParam("coin") String coin,
+      @QueryParam("network") String network,
       @QueryParam("recvWindow") Long recvWindow,
       @QueryParam("timestamp") SynchronizedValueFactory<Long> timestamp,
       @HeaderParam(X_MBX_APIKEY) String apiKey,

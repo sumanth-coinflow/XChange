@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public final class BinanceDeposit {
 
+  private String id;
   private BigDecimal amount;
   private String coin;
   private String network;

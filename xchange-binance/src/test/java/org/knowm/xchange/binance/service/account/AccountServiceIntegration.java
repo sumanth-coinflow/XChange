@@ -112,14 +112,14 @@ public class AccountServiceIntegration extends BinanceExchangeIntegration {
   @Test
   public void testDepositAddress() throws Exception {
     assumeProduction();
-    String address = accountService.requestDepositAddress(Currency.BTC, (String) null);
+    String address = accountService.requestDepositAddress(Currency.BTC, (String) null, (String) null);
     Assert.assertNotNull(address);
   }
 
   @Test
   public void testDepositHistory() throws Exception {
     assumeProduction();
-    List<BinanceDeposit> depositHistory = accountService.depositHistory("BTC", null, null);
+    List<BinanceDeposit> depositHistory = accountService.depositHistory("BTC", null, null, null);
     Assert.assertNotNull(depositHistory);
   }
 

@@ -14,10 +14,7 @@ import org.knowm.xchange.binance.BinanceAuthenticated;
 import org.knowm.xchange.binance.BinanceErrorAdapter;
 import org.knowm.xchange.binance.BinanceExchange;
 import org.knowm.xchange.binance.dto.BinanceException;
-import org.knowm.xchange.binance.dto.account.AssetDetail;
-import org.knowm.xchange.binance.dto.account.BinanceAccountInformation;
-import org.knowm.xchange.binance.dto.account.DepositAddress;
-import org.knowm.xchange.binance.dto.account.WithdrawResponse;
+import org.knowm.xchange.binance.dto.account.*;
 import org.knowm.xchange.client.ResilienceRegistries;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -134,6 +131,15 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
     }
   }
 
+  public String withdrawFunds(Currency currency, String network, BigDecimal amount, String address, String withdrawOrderId)
+          throws IOException {
+    try {
+      return super.withdraw(currency.getCurrencyCode(), network, address, amount, withdrawOrderId).getId();
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
   @Override
   public String withdrawFunds(Currency currency, BigDecimal amount, AddressWithTag address)
       throws IOException {
@@ -174,7 +180,15 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
   @Override
   public String requestDepositAddress(Currency currency, String... args) throws IOException {
     try {
-      return super.requestDepositAddress(currency).address;
+      return super.requestDepositAddress(currency, null).address;
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+  public String getDepositAddress(Currency currency, String network) throws IOException {
+    try {
+      return super.requestDepositAddress(currency, network).address;
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
@@ -183,7 +197,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
   @Override
   public AddressWithTag requestDepositAddressData(Currency currency, String... args)
       throws IOException {
-    DepositAddress depositAddress = super.requestDepositAddress(currency);
+    DepositAddress depositAddress = super.requestDepositAddress(currency, null);
     String destinationTag =
         (depositAddress.addressTag == null || depositAddress.addressTag.isEmpty())
             ? null
@@ -242,12 +256,16 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
         }
       }
 
+      Integer status = null;
       if (params instanceof HistoryParamsFundingType) {
         HistoryParamsFundingType f = (HistoryParamsFundingType) params;
         if (f.getType() != null) {
           withdrawals = f.getType() == Type.WITHDRAWAL;
           deposits = f.getType() == Type.DEPOSIT;
           otherInflow = f.getType() == Type.OTHER_INFLOW;
+        }
+        if (f instanceof BinanceFundingHistoryParams) {
+          status = ((BinanceFundingHistoryParams) f).getStatus();
         }
       }
 
@@ -266,7 +284,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
 
       List<FundingRecord> result = new ArrayList<>();
       if (withdrawals) {
-        super.withdrawHistory(asset, startTime, endTime)
+        super.withdrawHistory(asset, status, startTime, endTime)
             .forEach(
                 w -> {
                   result.add(
@@ -287,7 +305,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
       }
 
       if (deposits) {
-        super.depositHistory(asset, startTime, endTime)
+        super.depositHistory(asset, status, startTime, endTime)
             .forEach(
                 d -> {
                   result.add(
@@ -297,7 +315,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
                           new Date(d.getInsertTime()),
                           Currency.getInstance(d.getCoin()),
                           d.getAmount(),
-                          null,
+                          d.getId(),
                           d.getTxId(),
                           Type.DEPOSIT,
                           depositStatus(d.getStatus()),
@@ -372,4 +390,62 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
       throw BinanceErrorAdapter.adapt(e);
     }
   }
+
+  public FundingRecord getDepositByHash(String txHash) throws IOException {
+    try {
+      List<BinanceDeposit> deposits = super.depositHistory(txHash);
+      if (deposits == null || deposits.size() == 0) {
+        return null;
+      }
+      BinanceDeposit d = deposits.get(0);
+      return new FundingRecord(d.getAddress(),
+                                d.getAddressTag(),
+                                new Date(d.getInsertTime()),
+                                Currency.getInstance(d.getCoin()),
+                                d.getAmount(),
+                                d.getId(),
+                                d.getTxId(),
+                                Type.DEPOSIT,
+                                depositStatus(d.getStatus()),
+                                null,
+                                null,
+                                null);
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+  public FundingRecord getWithdrawalByWithdrawOrderId(String withdrawOrderId) throws IOException {
+    try {
+      List<BinanceWithdraw> withdraws = super.withdrawHistory(withdrawOrderId);
+      if (withdraws == null || withdraws.size() == 0) {
+        return null;
+      }
+      BinanceWithdraw w = withdraws.get(0);
+      return new FundingRecord(
+              w.getAddress(),
+              w.getAddressTag(),
+              BinanceAdapters.toDate(w.getApplyTime()),
+              Currency.getInstance(w.getCoin()),
+              w.getAmount(),
+              w.getId(),
+              w.getTxId(),
+              Type.WITHDRAWAL,
+              withdrawStatus(w.getStatus()),
+              null,
+              w.getTransactionFee(),
+              null);
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+  public List<BinanceCoinInfo> getAllCoinsInfo() throws IOException {
+    try {
+      return super.getAllCoinsInfo();
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
 }
