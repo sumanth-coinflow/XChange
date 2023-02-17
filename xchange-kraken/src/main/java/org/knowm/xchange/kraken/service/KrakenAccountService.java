@@ -96,13 +96,13 @@ public class KrakenAccountService extends KrakenAccountServiceRaw implements Acc
     } else if (Currency.LTC.equals(currency)) {
       depositAddresses = getDepositAddresses(currency.toString(), "Litecoin", false);
     } else if (Currency.ETH.equals(currency)) {
-      depositAddresses = getDepositAddresses(currency.toString(), "Ether (Hex)", false);
-    } else if (Currency.ZEC.equals(currency)) {
-      depositAddresses = getDepositAddresses(currency.toString(), "Zcash (Transparent)", false);
-    } else if (Currency.ADA.equals(currency)) {
-      depositAddresses = getDepositAddresses(currency.toString(), "ADA", false);
-    } else if (Currency.XMR.equals(currency)) {
-      depositAddresses = getDepositAddresses(currency.toString(), "Monero", false);
+      depositAddresses = getDepositAddresses(currency.toString(), "Ethereum (ERC20)", false);
+    } else if (Currency.USDT.equals(currency)) {
+      depositAddresses = getDepositAddresses(currency.toString(), "Tether USD (ERC20)", false);
+    } else if (Currency.DAI.equals(currency)) {
+      depositAddresses = getDepositAddresses(currency.toString(), "Dai", false);
+    } else if (Currency.SHIB.equals(currency)) {
+      depositAddresses = getDepositAddresses(currency.toString(), "Shiba Inu (SHIB)", false);
     } else if (Currency.XRP.equals(currency)) {
       depositAddresses = getDepositAddresses(currency.toString(), "Ripple XRP", false);
     } else if (Currency.XLM.equals(currency)) {
