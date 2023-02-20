@@ -296,7 +296,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
                           withdrawStatus(w.getStatus()),
                           null,
                           w.getTransactionFee(),
-                          null));
+                          w.getInfo()));
                 });
       }
 
@@ -317,7 +317,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
                           depositStatus(d.getStatus()),
                           null,
                           null,
-                          null));
+                          d.getNetwork()));
                 });
       }
 
@@ -405,7 +405,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
                                 depositStatus(d.getStatus()),
                                 null,
                                 null,
-                                null);
+                                d.getNetwork());
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
@@ -430,7 +430,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
               withdrawStatus(w.getStatus()),
               null,
               w.getTransactionFee(),
-              null);
+              w.getInfo());
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
