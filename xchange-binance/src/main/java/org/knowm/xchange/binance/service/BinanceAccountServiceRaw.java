@@ -77,12 +77,12 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .call();
   }
 
-  public DepositAddress requestDepositAddress(Currency currency, String network) throws IOException {
+  public DepositAddress requestDepositAddress(Currency currency) throws IOException {
     return decorateApiCall(
             () ->
                 binance.depositAddress(
                     BinanceAdapters.toSymbol(currency),
-                    network,
+                    null,
                     getRecvWindow(),
                     getTimestampFactory(),
                     apiKey,
@@ -90,6 +90,21 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .withRetry(retry("depositAddress"))
         .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
         .call();
+  }
+
+  public DepositAddress requestDepositAddress(Currency currency, String network) throws IOException {
+    return decorateApiCall(
+            () ->
+                    binance.depositAddress(
+                            BinanceAdapters.toSymbol(currency),
+                            network,
+                            getRecvWindow(),
+                            getTimestampFactory(),
+                            apiKey,
+                            signatureCreator))
+            .withRetry(retry("depositAddress"))
+            .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
+            .call();
   }
 
   public Map<String, AssetDetail> requestAssetDetail() throws IOException {
@@ -102,13 +117,12 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
         .call();
   }
 
-  public List<BinanceDeposit> depositHistory(String asset, Integer status, Long startTime, Long endTime)
+  public List<BinanceDeposit> depositHistory(String asset, Long startTime, Long endTime)
       throws BinanceException, IOException {
     return decorateApiCall(
             () ->
                 binance.depositHistory(
                     asset,
-                    status,
                     null,
                     startTime,
                     endTime,
@@ -127,7 +141,6 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
             () ->
                     binance.depositHistory(
                             null,
-                            null,
                             txId,
                             null,
                             null,
@@ -140,13 +153,12 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
             .call();
   }
 
-  public List<BinanceWithdraw> withdrawHistory(String asset, Integer status, Long startTime, Long endTime)
+  public List<BinanceWithdraw> withdrawHistory(String asset, Long startTime, Long endTime)
       throws BinanceException, IOException {
     return decorateApiCall(
             () ->
                 binance.withdrawHistory(
                     asset,
-                    status,
                     null,
                     startTime,
                     endTime,
@@ -164,7 +176,6 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
     return decorateApiCall(
             () ->
                     binance.withdrawHistory(
-                            null,
                             null,
                             withdrawOrderId,
                             null,

@@ -342,7 +342,6 @@ public interface BinanceAuthenticated extends Binance {
    * Fetch deposit history.
    *
    * @param coin optional
-   * @param status optional
    * @param txId optional - transaction hash search
    * @param startTime optional
    * @param endTime optional
@@ -356,7 +355,6 @@ public interface BinanceAuthenticated extends Binance {
    */
   List<BinanceDeposit> depositHistory(
       @QueryParam("coin") String coin,
-      @QueryParam("status") Integer status,
       @QueryParam("txId") String txId,
       @QueryParam("startTime") Long startTime,
       @QueryParam("endTime") Long endTime,
@@ -372,7 +370,6 @@ public interface BinanceAuthenticated extends Binance {
    * Fetch withdraw history.
    *
    * @param coin optional
-   * @param status optional
    * @param withdrawOrderId optional
    * @param startTime optional
    * @param endTime optional
@@ -386,7 +383,6 @@ public interface BinanceAuthenticated extends Binance {
    */
   List<BinanceWithdraw> withdrawHistory(
       @QueryParam("coin") String coin,
-      @QueryParam("status") Integer status,
       @QueryParam("withdrawOrderId") String withdrawOrderId,
       @QueryParam("startTime") Long startTime,
       @QueryParam("endTime") Long endTime,

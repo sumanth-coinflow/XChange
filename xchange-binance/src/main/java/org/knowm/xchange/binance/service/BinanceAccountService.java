@@ -180,7 +180,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
   @Override
   public String requestDepositAddress(Currency currency, String... args) throws IOException {
     try {
-      return super.requestDepositAddress(currency, null).address;
+      return super.requestDepositAddress(currency).address;
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
@@ -256,16 +256,12 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
         }
       }
 
-      Integer status = null;
       if (params instanceof HistoryParamsFundingType) {
         HistoryParamsFundingType f = (HistoryParamsFundingType) params;
         if (f.getType() != null) {
           withdrawals = f.getType() == Type.WITHDRAWAL;
           deposits = f.getType() == Type.DEPOSIT;
           otherInflow = f.getType() == Type.OTHER_INFLOW;
-        }
-        if (f instanceof BinanceFundingHistoryParams) {
-          status = ((BinanceFundingHistoryParams) f).getStatus();
         }
       }
 
@@ -284,7 +280,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
 
       List<FundingRecord> result = new ArrayList<>();
       if (withdrawals) {
-        super.withdrawHistory(asset, status, startTime, endTime)
+        super.withdrawHistory(asset, startTime, endTime)
             .forEach(
                 w -> {
                   result.add(
@@ -305,7 +301,7 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
       }
 
       if (deposits) {
-        super.depositHistory(asset, status, startTime, endTime)
+        super.depositHistory(asset, startTime, endTime)
             .forEach(
                 d -> {
                   result.add(
