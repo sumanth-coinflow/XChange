@@ -112,7 +112,7 @@ public class AccountServiceIntegration extends BinanceExchangeIntegration {
   @Test
   public void testDepositAddress() throws Exception {
     assumeProduction();
-    String address = accountService.requestDepositAddress(Currency.BTC, (String) null);
+    String address = accountService.requestDepositAddress(Currency.BTC, (String) null, (String) null);
     Assert.assertNotNull(address);
   }
 

@@ -2,10 +2,7 @@ package org.knowm.xchange.binance.service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.Value;
 import org.knowm.xchange.binance.BinanceAdapters;
@@ -329,6 +326,33 @@ public class BinanceTradeService extends BinanceTradeServiceRaw implements Trade
                     null)));
       }
       return orders;
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+  public Collection<Order> getOrders(OrderQueryParams param, Integer limit) throws IOException {
+    try {
+      if (!(param instanceof OrderQueryParamCurrencyPair)) {
+        throw new ExchangeException(
+                "Parameters must be an instance of OrderQueryParamCurrencyPair");
+      }
+      OrderQueryParamCurrencyPair orderQueryParamCurrencyPair =
+              (OrderQueryParamCurrencyPair) param;
+      if (orderQueryParamCurrencyPair.getCurrencyPair() == null
+              || orderQueryParamCurrencyPair.getOrderId() == null) {
+        throw new ExchangeException(
+                "You need to provide the currency pair and the order id to query an order.");
+      }
+      if (Objects.isNull(limit)) {
+        limit = 500; // Default
+      }
+
+      List<BinanceOrder> orders = super.allOrders(orderQueryParamCurrencyPair.getCurrencyPair(),
+              BinanceAdapters.id(orderQueryParamCurrencyPair.getOrderId()),
+              limit);
+
+      return orders.stream().map(BinanceAdapters::adaptOrder).collect(Collectors.toList());
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }

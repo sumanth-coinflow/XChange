@@ -20,4 +20,5 @@ public final class BinanceWithdraw {
 
   private BigDecimal transactionFee;
   private String txId;
+  private String info;
 }
