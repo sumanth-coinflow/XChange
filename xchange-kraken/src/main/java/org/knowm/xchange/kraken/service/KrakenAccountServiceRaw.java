@@ -97,7 +97,7 @@ public class KrakenAccountServiceRaw extends KrakenBaseService {
     return checkResult(withdrawResult);
   }
 
-  public List<DepostitStatus> getDepositStatus(String assetPairs, String assets, String method)
+  public List<DepositStatus> getDepositStatus(String assetPairs, String assets, String method)
       throws IOException {
     DepositStatusResult result =
         kraken.getDepositStatus(

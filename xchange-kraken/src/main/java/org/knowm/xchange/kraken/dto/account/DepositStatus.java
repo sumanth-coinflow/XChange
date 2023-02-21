@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class DepostitStatus {
+public class DepositStatus {
 
   private final String method;
   private final String aclass;
@@ -18,7 +18,7 @@ public class DepostitStatus {
   private final String status;
   private final String statusProp;
 
-  public DepostitStatus(
+  public DepositStatus(
       @JsonProperty("method") String method,
       @JsonProperty("aclass") String aclass,
       @JsonProperty("asset") String asset,
