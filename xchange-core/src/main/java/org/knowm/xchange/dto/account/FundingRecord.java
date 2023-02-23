@@ -1,11 +1,12 @@
 package org.knowm.xchange.dto.account;
 
+import org.knowm.xchange.currency.Currency;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.knowm.xchange.currency.Currency;
 
 /**
  * DTO representing funding information
@@ -344,20 +345,20 @@ public final class FundingRecord implements Serializable {
      * to the user. The funding request may possibly still be cancelled though.
      */
     PROCESSING(
-        "WAIT CONFIRMATION",
-        "EMAIL CONFIRMATION",
-        "EMAIL SENT",
-        "AWAITING APPROVAL",
-        "VERIFYING",
-        "PENDING_APPROVAL",
-        "PENDING"),
+            "WAIT CONFIRMATION",
+            "EMAIL CONFIRMATION",
+            "EMAIL SENT",
+            "AWAITING APPROVAL",
+            "VERIFYING",
+            "PENDING_APPROVAL",
+            "PENDING", "SETTLED", "INITIAL"),
 
     /**
      * The exchange has processed the transfer fully and successfully. The funding typically cannot
      * be cancelled any more. For withdrawals, the funds are gone from the exchange, though they may
      * have not reached their destination yet. For deposits, the funds are available to the user.
      */
-    COMPLETE("COMPLETED"),
+    COMPLETE("COMPLETED", "SUCCESS"),
 
     /** The transfer was cancelled either by the user or by the exchange. */
     CANCELLED("REVOKED", "CANCEL", "REFUND"),
