@@ -59,4 +59,13 @@ public class KrakenAssetPair {
 
   @JsonProperty("ordermin")
   BigDecimal orderMin;
+
+  @JsonProperty("costmin")
+  BigDecimal costMin;
+
+  @JsonProperty("status")
+  String status;
+
+  @JsonProperty("tick_size")
+  BigDecimal tickSize;
 }
