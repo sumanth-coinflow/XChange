@@ -8,6 +8,7 @@ public class KrakenAsset {
   private final String assetClass;
   private final int scale;
   private final int displayScale;
+  private final String status;
 
   /**
    * Constructor
@@ -16,17 +17,20 @@ public class KrakenAsset {
    * @param assetClass
    * @param scale
    * @param displayScale
+   * @param status
    */
   public KrakenAsset(
       @JsonProperty("altname") String altName,
       @JsonProperty("aclass") String assetClass,
       @JsonProperty("decimals") int scale,
-      @JsonProperty("display_decimals") int displayScale) {
+      @JsonProperty("display_decimals") int displayScale,
+      @JsonProperty("status") String status ) {
 
     this.altName = altName;
     this.assetClass = assetClass;
     this.scale = scale;
     this.displayScale = displayScale;
+    this.status = status;
   }
 
   public String getAltName() {
@@ -49,6 +53,10 @@ public class KrakenAsset {
     return displayScale;
   }
 
+  public String getStatus() {
+
+    return status;
+  }
   @Override
   public String toString() {
 
@@ -60,6 +68,8 @@ public class KrakenAsset {
         + scale
         + ", displayScale="
         + displayScale
+        + ", status="
+        + status
         + "]";
   }
 }
