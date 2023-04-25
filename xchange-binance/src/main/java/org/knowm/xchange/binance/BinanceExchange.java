@@ -155,7 +155,7 @@ public class BinanceExchange extends BaseExchange {
             minQty = new BigDecimal(filter.getMinQty()).stripTrailingZeros();
             maxQty = new BigDecimal(filter.getMaxQty()).stripTrailingZeros();
             stepSize = new BigDecimal(filter.getStepSize()).stripTrailingZeros();
-          } else if (filter.getFilterType().equals("MIN_NOTIONAL")) {
+          } else if (filter.getFilterType().equals("NOTIONAL")) {
             counterMinQty = new BigDecimal(filter.getMinNotional()).stripTrailingZeros();
           }
         }
