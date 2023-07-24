@@ -129,6 +129,8 @@ public class KrakenAccountService extends KrakenAccountServiceRaw implements Acc
       depositAddresses = getDepositAddresses(currency.toString(), "EOS", false);
     } else if (Currency.DASH.equals(currency)) {
       depositAddresses = getDepositAddresses(currency.toString(), "Dash", false);
+    } else if (Currency.SOL.equals(currency)) {
+      depositAddresses = getDepositAddresses(currency.toString(), "Solana", false);
     } else {
       throw new RuntimeException("Not implemented yet, Kraken works only for BTC and LTC");
     }
