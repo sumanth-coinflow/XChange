@@ -105,6 +105,7 @@ public class KrakenAccountService extends KrakenAccountServiceRaw implements Acc
       depositAddresses = getDepositAddresses(currency.toString(), "Shiba Inu (SHIB)", false);
     } else if (Currency.XRP.equals(currency)) {
       depositAddresses = getDepositAddresses(currency.toString(), "Ripple XRP", false);
+      return depositAddresses[0].getAddress() + (Objects.nonNull(depositAddresses[0].getTag()) ? ":" + depositAddresses[0].getTag() : "");
     } else if (Currency.XLM.equals(currency)) {
       depositAddresses = getDepositAddresses(currency.toString(), "Stellar XLM", false);
     } else if (Currency.BCH.equals(currency)) {

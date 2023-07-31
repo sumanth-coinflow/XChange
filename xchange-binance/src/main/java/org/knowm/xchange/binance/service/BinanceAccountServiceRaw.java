@@ -48,11 +48,11 @@ public class BinanceAccountServiceRaw extends BinanceBaseService {
     return withdraw(coin, null, address, addressTag, amount, name, null);
   }
 
-  public WithdrawResponse withdraw(String coin, String network, String address, BigDecimal amount, String withdrawOrderId)
+  public WithdrawResponse withdraw(String coin, String network, String address, String addressTag, BigDecimal amount, String withdrawOrderId)
           throws IOException, BinanceException {
     // the name parameter seams to be mandatory
     String name = address.length() <= 10 ? address : address.substring(0, 10);
-    return withdraw(coin, network, address, null, amount, name, withdrawOrderId);
+    return withdraw(coin, network, address, addressTag, amount, name, withdrawOrderId);
   }
 
   private WithdrawResponse withdraw(

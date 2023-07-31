@@ -131,10 +131,10 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
     }
   }
 
-  public String withdrawFunds(Currency currency, String network, BigDecimal amount, String address, String withdrawOrderId)
+  public String withdrawFunds(Currency currency, String network, BigDecimal amount, String address, String addressTag, String withdrawOrderId)
           throws IOException {
     try {
-      return super.withdraw(currency.getCurrencyCode(), network, address, amount, withdrawOrderId).getId();
+      return super.withdraw(currency.getCurrencyCode(), network, address, addressTag, amount, withdrawOrderId).getId();
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
@@ -186,9 +186,13 @@ public class BinanceAccountService extends BinanceAccountServiceRaw implements A
     }
   }
 
-  public String getDepositAddress(Currency currency, String network) throws IOException {
+  public AddressWithTag getDepositAddress(Currency currency, String network) throws IOException {
     try {
-      return super.requestDepositAddress(currency, network).address;
+      DepositAddress depositAddress = super.requestDepositAddress(currency, network);
+      String destinationTag = (depositAddress.addressTag == null || depositAddress.addressTag.isEmpty())
+                      ? null
+                      : depositAddress.addressTag;
+      return new AddressWithTag(depositAddress.address, destinationTag);
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);
     }
